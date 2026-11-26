@@ -58,3 +58,7 @@ Las correcciones, los estados de los paneles y los paneles propios se guardan en
 ## Publicar en GitHub Pages
 
 Sube solo estos archivos al repositorio: `index.html`, `data.js`, `glossary.js`, `haikus.js` y las carpetas `web/` (thumbs, preview, medium y las franjas de la invitación; unos 220 MB) y `descargas/` (unos 250 MB). Sin `glossary.js` o `haikus.js` faltan el glosario o los haikus. No subas `imagenes/`, que pesa cerca de 3 GB. Ten en cuenta que en un repositorio público las imágenes quedan visibles para cualquiera. Con `descargas/` en el repositorio, el botón Download funciona directamente en la copia de GitHub.
+
+## Créditos de los iconos
+
+Los iconos de las secciones del panel lateral son de [Phosphor Icons](https://phosphoricons.com), peso light, con licencia MIT.
