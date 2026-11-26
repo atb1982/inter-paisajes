@@ -13,7 +13,7 @@ Abre `index.html` con doble clic. La página abre en inglés; el botón EN | ES 
 | `index.html` | La página navegable |
 | `data.js` | Datos de las imágenes y de los paneles sugeridos (lo lee la página) |
 | `glossary.js` | Glosario bilingüe de elementos y principios (lo lee la página) |
-| `haikus.js` | Un haiku en inglés y otro en español para cada uno de los 88 paneles sugeridos (lo lee la página) |
+| `haikus.js` | Un haiku en inglés y otro en español para cada uno de los 96 paneles sugeridos (lo lee la página) |
 | `datos/haikus.csv` | Los mismos haikus en una tabla |
 | `datos/glosario.csv` | El mismo glosario en una tabla |
 | `datos/etiquetas_diseno.tsv` | Etiquetas visuales de principios, elementos, estructura y sujeto (códigos) |
@@ -21,7 +21,7 @@ Abre `index.html` con doble clic. La página abre en inglés; el botón EN | ES 
 | `web/thumbs/`, `web/preview/`, `web/medium/` | Miniaturas (480 px), vistas previas para las tarjetas de paneles (900 px) y versiones medianas para la vista grande (1600 px), todas en JPG |
 | `imagenes/` | Imágenes para la instalación, por región y carpeta de origen. Los TIF están convertidos a PNG |
 | `datos/catalogo.csv` | Una fila por imagen con todas las etiquetas |
-| `datos/paneles_sugeridos.csv` | Los 88 paneles sugeridos (serie B) |
+| `datos/paneles_sugeridos.csv` | Los 96 paneles sugeridos (serie B) |
 | `datos/etiquetas_borrador.tsv` | Etiquetas visuales originales (borrador para corregir) |
 | `manifest.csv` | Inventario técnico: rutas, tamaños y color medio |
 | `hojas_de_contacto/` | 20 hojas con 20 imágenes cada una |

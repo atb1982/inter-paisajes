@@ -1,4 +1,4 @@
-/* Haikus for the 88 suggested panels (English and Spanish), written from the four images of each panel. */
+/* Haikus for the 96 suggested panels (English and Spanish), written from the four images of each panel. */
 window.HAIKUS={
 "B01": {
 "en": [
@@ -1055,5 +1055,13 @@ window.HAIKUS={
 "filas verdes y vena,",
 "disco azul, tronco."
 ]
-}
+},
+"B89":{"en": ["Red specks on a leaf,", "coiled rings unwind into blades,", "seeds swell into light."], "es": ["Motas, una hoja,", "anillos se despliegan,", "la semilla es luz."]},
+"B90":{"en": ["Pores in the gray stone,", "a seedling draws its green line,", "galls round into weight."], "es": ["Poros en piedra,", "brote que traza un verde,", "la agalla pesa."]},
+"B91":{"en": ["Three caps in the bark,", "threads weave a pale labyrinth,", "a drop holds the sky."], "es": ["Tres setas, tronco,", "un laberinto de hilos,", "gota con cielo."]},
+"B92":{"en": ["White dots on a leaf,", "a trunk draws the vertical,", "hills ripen to buds."], "es": ["Puntos sobre hoja,", "un tronco traza el eje,", "loma hecha yema."]},
+"B93":{"en": ["Moss dot on a trunk,", "fibers stretch in a gray band,", "a leaf, then red seeds."], "es": ["Musgo y un tronco,", "las fibras forman franjas,", "rosa hoja, grana."]},
+"B94":{"en": ["Leaves dot the blue sky,", "wool threads loop in a circle,", "a capsule turns round."], "es": ["Hojas en cielo,", "la lana traza círculos,", "cápsula, peso."]},
+"B95":{"en": ["Stars on green velvet,", "a trail cuts through autumn light,", "flakes gather to galls."], "es": ["Estrellas verdes,", "un sendero cruza luz,", "capas, agalla."]},
+"B96":{"en": ["Orange dots on fern,", "a trunk climbs toward the light,", "lichen swells to galls."], "es": ["Puntos de helecho,", "un tronco sube a la luz,", "liquen, agalla."]}
 };
