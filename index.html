@@ -27,9 +27,6 @@
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Lato,"Helvetica Neue",Arial,sans-serif}
 button,select,input,textarea{font:inherit;color:inherit}
-.strip{height:120px;background:#595959 center/cover no-repeat}
-.strip.top{background-image:url("web/banner_top.jpg");background-position:center 40%}
-.strip.bottom{background-image:url("web/banner_bottom.jpg");height:90px}
 .titleband{background:var(--band);color:var(--band-ink);text-align:center;padding:18px 16px 14px}
 .titleband h1{margin:0;font-weight:700;font-size:clamp(28px,4.6vw,56px);line-height:1.05;letter-spacing:-.5px}
 .titleband .sub{font-style:italic;font-size:clamp(14px,1.8vw,22px);margin-top:6px}
@@ -89,6 +86,10 @@ details.key h4{margin:12px 0 2px;font-size:11px;text-transform:uppercase;letter-
 .badge span.role{background:#fff;color:#333;border:1px solid rgba(0,0,0,.2)}
 .add{position:absolute;top:6px;right:6px;background:rgba(255,255,255,.95);color:#222;border:none;border-radius:2px;padding:2px 8px;font-size:12px;cursor:pointer;opacity:0;transition:opacity .15s}
 .card:hover .add{opacity:1}
+.favbtn{position:absolute;bottom:6px;left:6px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.92);color:#222;font-size:17px;line-height:1;cursor:pointer;opacity:0;transition:opacity .15s}
+.favbtn.on{opacity:1;color:#d98a00}
+.card:hover .favbtn,.favbtn:focus-visible{opacity:1}
+@media (hover:none){.favbtn{opacity:1}}
 @media (hover:none){.add{opacity:1}}
 .dot-edit{position:absolute;bottom:6px;right:6px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid #fff}
 .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:0 0 18px}
@@ -217,7 +218,8 @@ dialog.wide{max-width:min(1500px,97vw)}
 .helphead{display:flex;justify-content:space-between;align-items:center;background:var(--band);color:#fff;padding:12px 16px}
 .helphead h2{margin:0;font-size:20px}.helphead .btn{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
 .helpbody{padding:14px 20px;overflow:auto;font-size:14px;line-height:1.55}
-.helpbody p{margin:0 0 10px}.helpbody ol{margin:0 0 10px;padding-left:20px}.helpbody li{margin-bottom:8px}
+.helpbody p{margin:0 0 12px}.hlist{list-style:none;margin:0;padding:0}.hlist li{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}.hlist li svg{flex:none;color:var(--band);margin-top:2px}.hlist b{display:block}.hlist span{color:var(--muted)}
+.helphead .hic{display:flex}.helphead h2{flex:1}.helphead{gap:12px}
 .helpfoot{padding:10px 16px 14px;text-align:right;border-top:1px solid var(--line)}
 #srcdlg{max-width:560px}
 .srcbox{padding:18px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
@@ -235,7 +237,6 @@ dialog.wide{max-width:min(1500px,97vw)}
 </style>
 </head>
 <body>
-<div class="strip top" role="img" aria-label="Image strip from the corpus"></div>
 <div class="titleband">
   <h1>Inter-paisajes | Inter-landscapes</h1>
   <div class="sub" data-t="subtitle"></div>
@@ -322,7 +323,6 @@ dialog.wide{max-width:min(1500px,97vw)}
   </section>
 </main>
 
-<div class="strip bottom" role="img" aria-label="Image strip from the corpus"></div>
 <footer data-t="footer"></footer>
 <dialog id="dlg"></dialog>
 <dialog id="pdlg" class="wide"></dialog>
@@ -340,8 +340,10 @@ const D=window.INTERPAISAJES, G=window.GLOSARIO||[];
 if(!D){document.body.innerHTML='<p style="padding:40px">data.js was not found next to index.html.</p>';return;}
 const KEY='interpaisajes_v1';
 const store=load();
-function load(){const d={ediciones:{},paneles:[],estados:{},borrador:[],sort:{}};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'));}catch(e){return d;}}
+function load(){const d={ediciones:{},paneles:[],estados:{},borrador:[],sort:{},favs:{}};try{return Object.assign(d,JSON.parse(localStorage.getItem(KEY)||'{}'));}catch(e){return d;}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+const favN=()=>{const ids=new Set(D.items.map(x=>x.id));return Object.keys(store.favs||{}).filter(k=>store.favs[k]&&ids.has(k)).length;};
 /* migrate the old element name "plano" to "forma" (shape) */
 for(const ed of Object.values(store.ediciones))for(const k of ['elemento_1','elemento_2'])if(ed[k]==='plano')ed[k]='forma';
 store.sort=store.sort||{};save();
@@ -353,7 +355,7 @@ en:{subtitle:'Optical and Postoptical Explorations across the Andes and the Appa
  tab_corpus:'Corpus',tab_sug:'Suggested panels',tab_mine:'My panels',tab_glos:'Glossary',export:'Export changes',import:'Import',
  sort:'Sort',group:'Group',size:'Size',clear:'Clear filters',search:'Search by id, subject, structure or file name',of:'of',
  s_id:'Id',s_color:'Color (hue)',s_lum:'Lightness',s_sat:'Saturation',s_enc:'Framing',s_elem:'Design element',g_none:'No grouping',
- only_main:'Only as main element',changes:'Changes',edited:'Edited by me',
+ only_main:'Only as main element',changes:'My marks',edited:'Edited by me',favs_only:'Favorites',fav_csv:'Download favorites (CSV)',fav_none:'No favorites yet',st_fav:'favorite images',
  sec_panel:'Panel role and source',sec_principles:'Principles',sec_elements:'Elements',sec_structure:'Structure and subject',sec_color:'Color',sec_practical:'Practical',
  st_total:'images in the corpus',st_anchor:'anchors available',st_split:'anchors Andes / Appalachia',st_sug:'suggested panels',st_mine:'my panels',
  key:'Key: how to read the labels',key_roles:'Role in panels',key_enc:'Framing',key_elem:'Design elements',key_more:'Open the full glossary',
@@ -381,7 +383,7 @@ es:{subtitle:'Exploraciones ópticas y posópticas entre los Andes y los Apalach
  tab_corpus:'Corpus',tab_sug:'Paneles sugeridos',tab_mine:'Mis paneles',tab_glos:'Glosario',export:'Exportar cambios',import:'Importar',
  sort:'Ordenar',group:'Agrupar',size:'Tamaño',clear:'Limpiar filtros',search:'Buscar por id, sujeto, estructura o archivo',of:'de',
  s_id:'Id',s_color:'Color (tono)',s_lum:'Luminosidad',s_sat:'Saturación',s_enc:'Encuadre',s_elem:'Elemento de diseño',g_none:'Sin agrupar',
- only_main:'Solo como elemento principal',changes:'Cambios',edited:'Editadas por mí',
+ only_main:'Solo como elemento principal',changes:'Mis marcas',edited:'Editadas por mí',favs_only:'Favoritas',fav_csv:'Descargar favoritas (CSV)',fav_none:'Aún no hay favoritas',st_fav:'imágenes favoritas',
  sec_panel:'Función y origen',sec_principles:'Principios',sec_elements:'Elementos',sec_structure:'Estructura y sujeto',sec_color:'Color',sec_practical:'Aspectos prácticos',
  st_total:'imágenes en el corpus',st_anchor:'anclas disponibles',st_split:'anclas Andes / Appalachia',st_sug:'paneles sugeridos',st_mine:'paneles propios',
  key:'Clave: cómo leer las etiquetas',key_roles:'Función en los paneles',key_enc:'Encuadre',key_elem:'Elementos de diseño',key_more:'Abrir el glosario completo',
@@ -519,7 +521,7 @@ $('#theme').onclick=()=>{const r=document.documentElement;const cur=r.dataset.th
 new IntersectionObserver(([e])=>$('#navband').classList.toggle('stuck',!e.isIntersecting)).observe($('.titleband'));
 
 /* ---------- filters ---------- */
-const F=Object.fromEntries(FIELDS.map(f=>[f.k,new Set()]));F.uso=new Set(['ancla','variante']);F.editado=new Set();
+const F=Object.fromEntries(FIELDS.map(f=>[f.k,new Set()]));F.uso=new Set(['ancla','variante']);F.editado=new Set();F.fav=new Set();
 const OPEN=new Set(FIELDS.filter(f=>f.open).map(f=>f.k));
 let elemPrincipal=false;
 function keyHTML(){
@@ -546,8 +548,9 @@ function renderFilters(){
     if(f.k==='elemento')h+=`<label style="font-size:12px;color:var(--muted);display:flex;gap:6px;margin:2px 0 4px"><input type="checkbox" id="eprin" ${elemPrincipal?'checked':''}> ${t('only_main')}</label>`;
     h+='</details>';
   });
-  h+=`<div class="fsec">${t('changes')}</div><div class="chips" style="margin-top:6px"><span class="chip ${F.editado.has('si')?'on':''}" data-k="editado" data-v="si">${t('edited')}<span class="n">${Object.keys(store.ediciones).length}</span></span></div>`;
+  h+=`<div class="fsec">${t('changes')}</div><div class="chips" style="margin-top:6px"><span class="chip ${F.fav.has('si')?'on':''}" data-k="fav" data-v="si">★ ${t('favs_only')}<span class="n">${favN()}</span></span><span class="chip ${F.editado.has('si')?'on':''}" data-k="editado" data-v="si">${t('edited')}<span class="n">${Object.keys(store.ediciones).length}</span></span></div><button class="btn small" id="favcsv" style="margin-top:8px">${t('fav_csv')}</button>`;
   $('#filters').innerHTML=h;
+  $('#favcsv').onclick=()=>{const ids=Object.keys(store.favs).filter(k=>store.favs[k]&&BASE[k]).sort();if(!ids.length){toast(t('fav_none'));return;}const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';download('interpaisajes_favorites_'+new Date().toISOString().slice(0,10)+'.csv',[['id','region','framing','file'].map(q).join(',')].concat(ids.map(i=>{const x=item(i);return [x.id,x.region,x.encuadre,x.archivo].map(q).join(',');})).join('\n'),'text/csv');};
   if(keyOpen)$('#keybox').open=true;
   $('#filters').querySelectorAll('details.fg').forEach(d=>d.addEventListener('toggle',()=>{d.open?OPEN.add(d.dataset.fk):OPEN.delete(d.dataset.fk);}));
   $('#filters').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{const s=F[c.dataset.k];s.has(c.dataset.v)?s.delete(c.dataset.v):s.add(c.dataset.v);renderFilters();renderGrid();});
@@ -558,18 +561,19 @@ function renderFilters(){
 function pass(x){
   for(const f of FIELDS){if(!F[f.k].size)continue;let vals=fget(f,x);if(f.k==='elemento'&&elemPrincipal)vals=[x.elemento_1];if(!vals.some(v=>F[f.k].has(v)))return false;}
   if(F.editado.size&&!store.ediciones[x.id])return false;
+  if(F.fav.size&&!store.favs[x.id])return false;
   const q=$('#q').value.trim().toLowerCase();
   if(q&&!([x.id,x.sujeto,x.sujeto_en,x.estructura,x.estructura_en,x.original,x.nota,x.nota_en,x.etiquetas_previas].join(' ').toLowerCase().includes(q)))return false;
   return true;
 }
 const SORT={id:(a,b)=>a.id.localeCompare(b.id),color:(a,b)=>hue(a.color_medio)-hue(b.color_medio),lum:(a,b)=>a.luminosidad-b.luminosidad,sat:(a,b)=>b.saturacion-a.saturacion,encuadre:(a,b)=>ENC.indexOf(a.encuadre)-ENC.indexOf(b.encuadre)||a.id.localeCompare(b.id),elemento:(a,b)=>ELEM.indexOf(a.elemento_1)-ELEM.indexOf(b.elemento_1)||a.id.localeCompare(b.id)};
 function card(x){
-  return `<div class="card" data-id="${x.id}"><div class="img" style="background:${x.color_medio}">${img(x)}<div class="badge"><span>${esc(vl('encuadre',x.encuadre))}</span>${x.uso!=='ancla'?`<span class="role" title="${esc(ROLEDESC[LANG][x.uso])}">${dot(x.uso)}${esc(vl('uso',x.uso))}</span>`:''}</div><button class="add" data-add="${x.id}">${t('add')}</button>${store.ediciones[x.id]?'<i class="dot-edit"></i>':''}</div>
+  return `<div class="card" data-id="${x.id}"><div class="img" style="background:${x.color_medio}">${img(x)}<div class="badge"><span>${esc(vl('encuadre',x.encuadre))}</span>${x.uso!=='ancla'?`<span class="role" title="${esc(ROLEDESC[LANG][x.uso])}">${dot(x.uso)}${esc(vl('uso',x.uso))}</span>`:''}</div><button class="add" data-add="${x.id}">${t('add')}</button><button class="favbtn ${store.favs[x.id]?'on':''}" data-fav="${x.id}" title="${t('fav')}" aria-label="${t('fav')}" aria-pressed="${store.favs[x.id]?'true':'false'}">${store.favs[x.id]?'★':'☆'}</button>${store.ediciones[x.id]?'<i class="dot-edit"></i>':''}</div>
   <div class="meta"><div class="id">${x.id}</div><div class="suj">${esc(subj(x))}</div><span class="tag r-${x.region}">${x.region}</span><span class="tag">${esc(vl('elemento',x.elemento_1))}</span><span class="tag">${esc(vl('estructura_nat',x.estructura_nat))}</span></div></div>`;
 }
 function renderStats(){
   const A=all(),an=A.filter(x=>x.uso==='ancla');
-  $('#stats').innerHTML=[[A.length,'st_total'],[an.length,'st_anchor'],[an.filter(x=>x.region==='Andes').length+' / '+an.filter(x=>x.region==='Appalachia').length,'st_split'],[D.paneles.length,'st_sug'],[store.paneles.length,'st_mine']].map(([b,k])=>`<div class="stat"><b>${b}</b><span>${t(k)}</span></div>`).join('');
+  $('#stats').innerHTML=[[A.length,'st_total'],[an.length,'st_anchor'],[an.filter(x=>x.region==='Andes').length+' / '+an.filter(x=>x.region==='Appalachia').length,'st_split'],[D.paneles.length,'st_sug'],[store.paneles.length,'st_mine'],[favN(),'st_fav']].map(([b,k])=>`<div class="stat"><b>${b}</b><span>${t(k)}</span></div>`).join('');
 }
 function renderGrid(){
   const list=all().filter(pass).sort(SORT[$('#sort').value]||SORT.id);
@@ -586,7 +590,7 @@ function renderGrid(){
   }
   $('#grid').innerHTML=h;$('#grid').style.setProperty('--tile',$('#size').value+'px');
 }
-$('#grid').addEventListener('click',e=>{const a=e.target.closest('[data-add]');if(a){e.stopPropagation();addToDraft(a.dataset.add);return;}const c=e.target.closest('.card');if(c)openItem(c.dataset.id);});
+$('#grid').addEventListener('click',e=>{const fv=e.target.closest('[data-fav]');if(fv){e.stopPropagation();const id=fv.dataset.fav;if(store.favs[id])delete store.favs[id];else store.favs[id]=1;save();if(F.fav.size){renderFilters();renderGrid();}else{const on=!!store.favs[id];fv.classList.toggle('on',on);fv.textContent=on?'★':'☆';fv.setAttribute('aria-pressed',on);renderFilters();}renderStats();return;}const a=e.target.closest('[data-add]');if(a){e.stopPropagation();addToDraft(a.dataset.add);return;}const c=e.target.closest('.card');if(c)openItem(c.dataset.id);});
 ['q','sort','group'].forEach(id=>$('#'+id).addEventListener('input',renderGrid));
 $('#size').addEventListener('input',()=>$('#grid').style.setProperty('--tile',$('#size').value+'px'));
 $('#clear').onclick=()=>{Object.values(F).forEach(s=>s.clear());$('#q').value='';renderFilters();renderGrid();};
@@ -876,31 +880,16 @@ $('#imp').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(txt=
   for(const [k,v] of Object.entries(d.ediciones||{})){for(const kk of ['elemento_1','elemento_2'])if(v[kk]==='plano')v[kk]='forma';store.ediciones[k]=Object.assign(store.ediciones[k]||{},v);}
   (d.paneles||[]).forEach(p=>{if(!store.paneles.some(q=>q.id===p.id))store.paneles.push(p);});
   for(const [k,v] of Object.entries(d.estados||{}))store.estados[k]=Object.assign(store.estados[k]||{},v);
+  store.favs=Object.assign(store.favs||{},d.favs||{});
   save();renderFilters();renderGrid();rerender();toast(t('imported'));}).catch(()=>toast(t('badfile')));e.target.value='';};
 $('#csvp').onclick=()=>{const en=LANG==='en';const rows=[en?['panel','kind','thread','status','favorite','note','anchor_1','anchor_2','anchor_3','anchor_4','file_1','file_2','file_3','file_4','haiku']:['panel','tipo','hilo','estado','favorito','nota','ancla_1','ancla_2','ancla_3','ancla_4','archivo_1','archivo_2','archivo_3','archivo_4','haiku']];
   [...D.paneles,...store.paneles.map(p=>({...p,tipo:en?'mine':'propio',hilo:p.nombre}))].forEach(p=>{const st=store.estados[p.id]||{};rows.push([p.id,vl('tipo',p.tipo),vl('hilo',p.hilo),vl('estado',st.estado||'por probar'),st.fav?'✓':'',st.nota||'',...p.anclas,...p.anclas.map(i=>item(i).archivo),haikuOf(p).replace(/\n/g,' / ')]);});
   download('interpaisajes_panels.csv',rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');};
 
-const HELP={en:{title:'How to use this catalog',body:`<p>This catalog helps you explore the image corpus and build the panels for <i>Inter-paisajes | Inter-landscapes</i>. Each panel has four real photographs, called anchors, with seven AI transition images between each pair. The fourth anchor returns to the first, so the panel closes as a ring.</p>
-<ol>
-<li><b>Corpus.</b> Browse every image. Use the filters on the left (region, scale, design elements and principles, color) and the search box. Click an image to open its record, where you can correct its labels, add a note and set its status. Use “+ panel” to send an image to your panel in progress.</li>
-<li><b>Suggested panels.</b> 88 ready combinations, each with a haiku. Click a panel name to see its four anchors side by side, as they would look on the wall. Use ← and → to change panels, “Order by” to sort them, and ☆ to mark favorites. “Edit” loads a panel into the builder.</li>
-<li><b>My panels.</b> Build your own. Add four anchors from the Corpus or press “Random combination”. Lock a slot with 🔒 to keep an image and randomize the rest. Use the arrows to set the circular order, then name the panel and press “Save panel”. Saved panels can be sorted, opened and edited like the suggested ones.</li>
-<li><b>Download.</b> Every panel has a Download button. You receive its four images with the prefixes 01_, 02_, 03_ and 04_ that give the order, plus a text file with the haiku.</li>
-<li><b>Glossary.</b> Definitions of the design principles and elements used in the labels, organized after Pentak and Lauer, <i>Design Basics</i>.</li>
-<li><b>Saving and sharing.</b> Your choices stay in this browser only. Use “Export changes” to save them in a file, and “Import” to load a file from someone else, for example to share panels between Andrés and Sandra.</li>
-</ol>
-<p class="help">EN and ES change the language. The ◐ button switches between light and dark. You can reopen these instructions at any time with the ? button.</p>`,ok:'Got it'},es:{title:'Cómo usar este catálogo',body:`<p>Este catálogo permite explorar el corpus de imágenes y armar los paneles de <i>Inter-paisajes | Inter-landscapes</i>. Cada panel tiene cuatro fotografías reales, llamadas anclas, con siete imágenes de transición generadas con IA entre cada par. La cuarta ancla vuelve a la primera, de modo que el panel se cierra como un anillo.</p>
-<ol>
-<li><b>Corpus.</b> Recorre todas las imágenes. Usa los filtros de la izquierda (región, escala, elementos y principios de diseño, color) y el buscador. Un clic en una imagen abre su ficha, donde puedes corregir sus etiquetas, añadir una nota y cambiar su estado. Con “+ panel” envías una imagen al panel en construcción.</li>
-<li><b>Paneles sugeridos.</b> 88 combinaciones listas, cada una con un haiku. Un clic en el nombre de un panel muestra sus cuatro anclas una al lado de otra, como se verían en el muro. Usa ← y → para cambiar de panel, “Ordenar por” para ordenarlos y ☆ para marcar favoritos. “Editar” carga un panel en el armador.</li>
-<li><b>Mis paneles.</b> Arma los tuyos. Añade cuatro anclas desde el Corpus o pulsa “Combinación aleatoria”. Bloquea una casilla con 🔒 para conservar una imagen y sortear el resto. Con las flechas defines el orden circular; luego pon un nombre y pulsa “Guardar panel”. Los paneles guardados se ordenan, se abren y se editan igual que los sugeridos.</li>
-<li><b>Descargar.</b> Todos los paneles tienen un botón Descargar. Recibes sus cuatro imágenes con los prefijos 01_, 02_, 03_ y 04_ que indican el orden, más un archivo de texto con el haiku.</li>
-<li><b>Glosario.</b> Definiciones de los principios y elementos de diseño usados en las etiquetas, organizadas a partir de Pentak y Lauer, <i>Design Basics</i>.</li>
-<li><b>Guardar y compartir.</b> Tus cambios quedan solo en este navegador. Usa “Exportar cambios” para guardarlos en un archivo e “Importar” para cargar el archivo de otra persona, por ejemplo para compartir paneles entre Andrés y Sandra.</li>
-</ol>
-<p class="help">EN y ES cambian el idioma. El botón ◐ alterna entre modo claro y oscuro. Puedes volver a abrir estas instrucciones en cualquier momento con el botón ?.</p>`,ok:'Entendido'}};
-function openHelp(){const h=HELP[LANG]||HELP.en,d=$('#helpdlg');d.innerHTML=`<div class="helpbox"><div class="helphead"><h2>${h.title}</h2><button class="btn small" data-h="x" aria-label="Close">✕</button></div><div class="helpbody">${h.body}</div><div class="helpfoot"><button class="btn" data-h="x">${h.ok}</button></div></div>`;d.onclick=e=>{if(e.target===d||e.target.closest('[data-h]'))d.close();};d.onclose=()=>{try{localStorage.setItem(KEY+'_help','1');}catch(e){}};if(!d.open)d.showModal();d.querySelector('.helpbody').scrollTop=0;}
+const HIC={info:`<path d="M142,176a6,6,0,0,1-6,6,14,14,0,0,1-14-14V128a2,2,0,0,0-2-2,6,6,0,0,1,0-12,14,14,0,0,1,14,14v40a2,2,0,0,0,2,2A6,6,0,0,1,142,176ZM124,94a10,10,0,1,0-10-10A10,10,0,0,0,124,94Zm106,34A102,102,0,1,1,128,26,102.12,102.12,0,0,1,230,128Zm-12,0a90,90,0,1,0-90,90A90.1,90.1,0,0,0,218,128Z"/>`,corpus:`<path d="M216,42H72A14,14,0,0,0,58,56V74H40A14,14,0,0,0,26,88V200a14,14,0,0,0,14,14H184a14,14,0,0,0,14-14V182h18a14,14,0,0,0,14-14V56A14,14,0,0,0,216,42ZM70,56a2,2,0,0,1,2-2H216a2,2,0,0,1,2,2v67.57L204.53,110.1a14,14,0,0,0-19.8,0l-21.42,21.41L117.9,86.1a14,14,0,0,0-19.8,0L70,114.2ZM186,200a2,2,0,0,1-2,2H40a2,2,0,0,1-2-2V88a2,2,0,0,1,2-2H58v82a14,14,0,0,0,14,14H186Zm30-30H72a2,2,0,0,1-2-2V131.17l36.58-36.58a2,2,0,0,1,2.83,0l49.66,49.66a6,6,0,0,0,8.49,0l25.65-25.66a2,2,0,0,1,2.83,0l22,22V168A2,2,0,0,1,216,170ZM162,84a10,10,0,1,1,10,10A10,10,0,0,1,162,84Z"/>`,sug:`<path d="M104,42H56A14,14,0,0,0,42,56v48a14,14,0,0,0,14,14h48a14,14,0,0,0,14-14V56A14,14,0,0,0,104,42Zm2,62a2,2,0,0,1-2,2H56a2,2,0,0,1-2-2V56a2,2,0,0,1,2-2h48a2,2,0,0,1,2,2Zm94-62H152a14,14,0,0,0-14,14v48a14,14,0,0,0,14,14h48a14,14,0,0,0,14-14V56A14,14,0,0,0,200,42Zm2,62a2,2,0,0,1-2,2H152a2,2,0,0,1-2-2V56a2,2,0,0,1,2-2h48a2,2,0,0,1,2,2Zm-98,34H56a14,14,0,0,0-14,14v48a14,14,0,0,0,14,14h48a14,14,0,0,0,14-14V152A14,14,0,0,0,104,138Zm2,62a2,2,0,0,1-2,2H56a2,2,0,0,1-2-2V152a2,2,0,0,1,2-2h48a2,2,0,0,1,2,2Zm94-62H152a14,14,0,0,0-14,14v48a14,14,0,0,0,14,14h48a14,14,0,0,0,14-14V152A14,14,0,0,0,200,138Zm2,62a2,2,0,0,1-2,2H152a2,2,0,0,1-2-2V152a2,2,0,0,1,2-2h48a2,2,0,0,1,2,2Z"/>`,mine:`<path d="M249.92,113.4,182.47,45.49a94.12,94.12,0,0,0-133,.06L35.68,59.78a6,6,0,0,0,8.63,8.35L58,54A82,82,0,0,1,78.55,39l49,49L30.09,185.4a14,14,0,0,0,0,19.81L50.78,225.9a14,14,0,0,0,19.8,0L168,128.46l33.42,33.42a14,14,0,0,0,19.8,0l28.68-28.69A14,14,0,0,0,249.92,113.4ZM62.1,217.41a2,2,0,0,1-2.83,0L38.58,196.72a2,2,0,0,1,0-2.83L108,124.46,131.51,148ZM163.76,115.73,140,139.49,116.48,116l23.76-23.76a6,6,0,0,0,0-8.49L90.54,34A82.07,82.07,0,0,1,174,54l45.62,45.93L188,131.49l-15.76-15.76A6,6,0,0,0,163.76,115.73Zm77.66,9-28.69,28.7a2,2,0,0,1-2.83,0L196.49,140l31.56-31.57,13.37,13.46A2,2,0,0,1,241.42,124.7Z"/>`,dl:`<path d="M222,144v64a6,6,0,0,1-6,6H40a6,6,0,0,1-6-6V144a6,6,0,0,1,12,0v58H210V144a6,6,0,0,1,12,0Zm-98.24,4.24a6,6,0,0,0,8.48,0l40-40a6,6,0,0,0-8.48-8.48L134,129.51V32a6,6,0,0,0-12,0v97.51L92.24,99.76a6,6,0,0,0-8.48,8.48Z"/>`,glos:`<path d="M232,50H160a38,38,0,0,0-32,17.55A38,38,0,0,0,96,50H24a6,6,0,0,0-6,6V200a6,6,0,0,0,6,6H96a26,26,0,0,1,26,26,6,6,0,0,0,12,0,26,26,0,0,1,26-26h72a6,6,0,0,0,6-6V56A6,6,0,0,0,232,50ZM96,194H30V62H96a26,26,0,0,1,26,26V204.31A37.86,37.86,0,0,0,96,194Zm130,0H160a37.87,37.87,0,0,0-26,10.32V88a26,26,0,0,1,26-26h66ZM160,90h40a6,6,0,0,1,0,12H160a6,6,0,0,1,0-12Zm46,38a6,6,0,0,1-6,6H160a6,6,0,0,1,0-12h40A6,6,0,0,1,206,128Zm0,32a6,6,0,0,1-6,6H160a6,6,0,0,1,0-12h40A6,6,0,0,1,206,160Z"/>`,save:`<path d="M217.9,73.42,182.58,38.1a13.9,13.9,0,0,0-9.89-4.1H48A14,14,0,0,0,34,48V208a14,14,0,0,0,14,14H208a14,14,0,0,0,14-14V83.31A13.9,13.9,0,0,0,217.9,73.42ZM170,210H86V152a2,2,0,0,1,2-2h80a2,2,0,0,1,2,2Zm40-2a2,2,0,0,1-2,2H182V152a14,14,0,0,0-14-14H88a14,14,0,0,0-14,14v58H48a2,2,0,0,1-2-2V48a2,2,0,0,1,2-2H172.69a2,2,0,0,1,1.41.58L209.42,81.9a2,2,0,0,1,.58,1.41ZM158,72a6,6,0,0,1-6,6H96a6,6,0,0,1,0-12h56A6,6,0,0,1,158,72Z"/>`,star:`<path d="M237.28,97.87A14.18,14.18,0,0,0,224.76,88l-60.25-4.87-23.22-56.2a14.37,14.37,0,0,0-26.58,0L91.49,83.11,31.24,88a14.18,14.18,0,0,0-12.52,9.89A14.43,14.43,0,0,0,23,113.32L69,152.93l-14,59.25a14.4,14.4,0,0,0,5.59,15,14.1,14.1,0,0,0,15.91.6L128,196.12l51.58,31.71a14.1,14.1,0,0,0,15.91-.6,14.4,14.4,0,0,0,5.59-15l-14-59.25L233,113.32A14.43,14.43,0,0,0,237.28,97.87Zm-12.14,6.37-48.69,42a6,6,0,0,0-1.92,5.92l14.88,62.79a2.35,2.35,0,0,1-.95,2.57,2.24,2.24,0,0,1-2.6.1L131.14,184a6,6,0,0,0-6.28,0L70.14,217.61a2.24,2.24,0,0,1-2.6-.1,2.35,2.35,0,0,1-1-2.57l14.88-62.79a6,6,0,0,0-1.92-5.92l-48.69-42a2.37,2.37,0,0,1-.73-2.65,2.28,2.28,0,0,1,2.07-1.65l63.92-5.16a6,6,0,0,0,5.06-3.69l24.63-59.6a2.35,2.35,0,0,1,4.38,0l24.63,59.6a6,6,0,0,0,5.06,3.69l63.92,5.16a2.28,2.28,0,0,1,2.07,1.65A2.37,2.37,0,0,1,225.14,104.24Z"/>`};
+const hic=(k,z)=>`<svg viewBox="0 0 256 256" width="${z||22}" height="${z||22}" fill="currentColor" aria-hidden="true">${HIC[k]}</svg>`;
+const HELP={en:{title:'How to use this catalog',intro:'Explore the images, build panels of four anchors that close as a ring, and download them.',list:`<li>${hic('corpus')}<div><b>Corpus</b><span>Filter and search the images. Click one to see its record. Press ☆ to mark a favorite and “+ panel” to add it to your panel.</span></div></li><li>${hic('sug')}<div><b>Suggested panels</b><span>88 ready combinations. Click a name to see the four images side by side.</span></div></li><li>${hic('mine')}<div><b>My panels</b><span>Choose four anchors, or press “Random combination”. Lock 🔒 what you want to keep, then save.</span></div></li><li>${hic('dl')}<div><b>Download</b><span>Each panel downloads as four images numbered 01_ to 04_.</span></div></li><li>${hic('glos')}<div><b>Glossary</b><span>What the design terms in the labels mean.</span></div></li><li>${hic('save')}<div><b>Save and share</b><span>Favorites, notes and panels stay in this browser. Use “Export changes” and “Import” to share them.</span></div></li>`,ok:'Got it'},es:{title:'Cómo usar este catálogo',intro:'Explora las imágenes, arma paneles de cuatro anclas que cierran como un anillo y descárgalos.',list:`<li>${hic('corpus')}<div><b>Corpus</b><span>Filtra y busca imágenes. Un clic abre su ficha. Pulsa ☆ para marcar una favorita y “+ panel” para añadirla a tu panel.</span></div></li><li>${hic('sug')}<div><b>Paneles sugeridos</b><span>88 combinaciones listas. Un clic en el nombre muestra las cuatro imágenes una al lado de otra.</span></div></li><li>${hic('mine')}<div><b>Mis paneles</b><span>Elige cuatro anclas o pulsa “Combinación aleatoria”. Bloquea 🔒 lo que quieras conservar y guarda.</span></div></li><li>${hic('dl')}<div><b>Descargar</b><span>Cada panel se descarga como cuatro imágenes numeradas de 01_ a 04_.</span></div></li><li>${hic('glos')}<div><b>Glosario</b><span>Qué significan los términos de diseño de las etiquetas.</span></div></li><li>${hic('save')}<div><b>Guardar y compartir</b><span>Las favoritas, notas y paneles quedan en este navegador. Usa “Exportar cambios” e “Importar” para compartirlos.</span></div></li>`,ok:'Entendido'}};
+function openHelp(){const h=HELP[LANG]||HELP.en,d=$('#helpdlg');d.innerHTML=`<div class="helpbox"><div class="helphead"><span class="hic">${hic('info',26)}</span><h2>${h.title}</h2><div class="lang"><button data-hl="en" class="${LANG==='en'?'on':''}">EN</button><button data-hl="es" class="${LANG==='es'?'on':''}">ES</button></div><button class="btn small" data-h="x" aria-label="Close">✕</button></div><div class="helpbody"><p>${h.intro}</p><ul class="hlist">${h.list}</ul></div><div class="helpfoot"><button class="btn" data-h="x">${h.ok}</button></div></div>`;d.onclick=e=>{const l=e.target.closest('[data-hl]');if(l){LANG=l.dataset.hl;try{localStorage.setItem(KEY+'_lang',LANG);}catch(er){}applyLang();openHelp();return;}if(e.target===d||e.target.closest('[data-h]'))d.close();};d.onclose=()=>{try{localStorage.setItem(KEY+'_help','1');}catch(e){}};if(!d.open)d.showModal();}
 $('#helpbtn').onclick=openHelp;
 try{if(!localStorage.getItem(KEY+'_help'))setTimeout(openHelp,400);}catch(e){setTimeout(openHelp,400);}
 applyLang();
