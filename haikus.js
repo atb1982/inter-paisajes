@@ -1061,7 +1061,7 @@ window.HAIKUS={
 "B91":{"en": ["Three caps in the bark,", "threads weave a pale labyrinth,", "a drop holds the sky."], "es": ["Tres setas, tronco,", "un laberinto de hilos,", "gota con cielo."]},
 "B92":{"en": ["White dots on a leaf,", "a trunk draws the vertical,", "hills ripen to buds."], "es": ["Puntos sobre hoja,", "un tronco traza el eje,", "loma hecha yema."]},
 "B93":{"en": ["Moss dot on a trunk,", "fibers stretch in a gray band,", "a leaf, then red seeds."], "es": ["Musgo y un tronco,", "las fibras forman franjas,", "rosa hoja, grana."]},
-"B94":{"en": ["Leaves dot the blue sky,", "wool threads loop in a circle,", "a capsule turns round."], "es": ["Hojas en cielo,", "la lana traza círculos,", "cápsula, peso."]},
-"B95":{"en": ["Stars on green velvet,", "a trail cuts through autumn light,", "flakes gather to galls."], "es": ["Estrellas verdes,", "un sendero cruza luz,", "capas, agalla."]},
+"B95":{"en": ["Leaves dot the blue sky,", "wool threads loop in a circle,", "a capsule turns round."], "es": ["Hojas en cielo,", "la lana traza círculos,", "cápsula, peso."]},
+"B94":{"en": ["Stars on green velvet,", "a trail cuts through autumn light,", "flakes gather to galls."], "es": ["Estrellas verdes,", "un sendero cruza luz,", "capas, agalla."]},
 "B96":{"en": ["Orange dots on fern,", "a trunk climbs toward the light,", "lichen swells to galls."], "es": ["Puntos de helecho,", "un tronco sube a la luz,", "liquen, agalla."]}
 };
