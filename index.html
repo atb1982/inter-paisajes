@@ -646,8 +646,8 @@ $('#dlg').addEventListener('click',e=>{if(e.target.id==='dlg')$('#dlg').close();
 const scaleOf=x=>['planta','paisaje'].includes(x.encuadre)?'paisaje':x.encuadre;
 function ringHTML(ids){
   const xs=ids.map(item);let h='<div class="ring">';
-  xs.forEach((x,i)=>{h+=`<div class="a" data-open="${x.id}" title="${esc(subj(x))}" style="background:${x.color_medio}">${imgP(x)}<div class="l">${x.id} · ${esc(vl('encuadre',x.encuadre))}</div></div>`;if(i<3)h+=`<div class="gap">${t('gap')}</div>`;});
-  return h+`</div><div class="ringback"><span>${t('back',xs[0].id)}</span><span class="ln"></span></div>`;
+  xs.forEach((x,i)=>{h+=`<div class="a" data-open="${x.id}" title="${esc(subj(x))}" style="background:${x.color_medio}">${imgP(x)}<div class="l">${x.id} · ${esc(vl('encuadre',x.encuadre))}</div></div>`;});
+  return h+'</div>';
 }
 function checks(ids){
   const xs=ids.map(item),regs=new Set(xs.map(x=>x.region)),sc=new Set(xs.map(scaleOf));
@@ -732,8 +732,7 @@ function openPanel(id,ctx){
   const ar=x=>(x.ancho&&x.alto)?x.ancho/x.alto:1.5,S=xs.reduce((q,x)=>q+ar(x),0);
   dlg.innerHTML=`<div class="pv"><div class="ph"><div class="phl"><h2>${esc(p.nombre||p.id)}</h2><div class="s">${own?'':esc(vl('tipo',p.tipo)+': '+vl('hilo',p.hilo))}</div><div class="hk" id="pvhk">${hk?esc(hk):`<span style="opacity:.65">${t('hk_none')}</span>`}</div></div>
    <div class="acts"><button class="btn small" data-pv="prev" ${i>0?'':'disabled'}>${t('pv_prev')}</button><button class="btn small" data-pv="next" ${i>=0&&i<ids.length-1?'':'disabled'}>${t('pv_next')}</button><button class="btn small" data-pv="dl">⬇ ${t('dl_short')}</button><button class="btn small" data-pv="close">${t('close')}</button></div></div>
-   <div class="pbody"><div class="screen"><div class="pstrip" style="max-width:calc(60vh * ${S.toFixed(3)} + 54px)">${xs.map((x,k)=>`${k?'<div class="pgap">7</div>':''}<figure data-k="${k}" style="flex:${ar(x).toFixed(3)} 1 0" title="${esc(subj(x))}"><img src="${esc(x.mediana)}" alt="${esc(x.id)}" style="aspect-ratio:${ar(x).toFixed(3)}" onerror="this.onerror=null;this.src='${esc(prevSrc(x))}'"><figcaption><span>${k+1} · ${x.id} · ${esc(vl('encuadre',x.encuadre))}</span><button data-pv="item" data-id="${x.id}">${t('pv_details')}</button></figcaption></figure>`).join('')}</div></div>
-   <div class="pback">${t('back',xs[0].id)}</div>
+   <div class="pbody"><div class="screen"><div class="pstrip" style="max-width:calc(60vh * ${S.toFixed(3)})">${xs.map((x,k)=>`<figure data-k="${k}" style="flex:${ar(x).toFixed(3)} 1 0" title="${esc(subj(x))}"><img src="${esc(x.mediana)}" alt="${esc(x.id)}" style="aspect-ratio:${ar(x).toFixed(3)}" onerror="this.onerror=null;this.src='${esc(prevSrc(x))}'"><figcaption><span>${k+1} · ${x.id} · ${esc(vl('encuadre',x.encuadre))}</span><button data-pv="item" data-id="${x.id}">${t('pv_details')}</button></figcaption></figure>`).join('')}</div></div>
    <textarea class="hkedit" id="pvta" rows="3" placeholder="${esc(t('hk_edit'))}">${esc(hk)}</textarea>
    ${orig?`<div class="hkbar"><button class="btn small" data-pv="hkreset">${t('hk_reset')}</button></div>`:''}
    <div class="pchecks">${own?checks(p.anclas).map(([ok,m])=>(ok?'✓ ':'✗ ')+esc(m)).join(' · '):esc(reason(p))}</div>
