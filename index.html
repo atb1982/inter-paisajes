@@ -211,6 +211,14 @@ dialog.wide{max-width:min(1500px,97vw)}
 .pv .pstrip.solo figure.zoom{flex:1 1 100%!important;cursor:zoom-out}
 .pv .pstrip.solo figure.zoom img{aspect-ratio:auto!important;max-height:68vh;object-fit:contain}
 .pv .pback{text-align:center;font-size:11px;color:var(--muted);margin-top:6px}
+#helpdlg{max-width:min(720px,94vw)}
+#helpbtn{width:30px;padding:4px 0;border-radius:50%;font-weight:700;text-align:center}
+.helpbox{display:flex;flex-direction:column;max-height:88vh}
+.helphead{display:flex;justify-content:space-between;align-items:center;background:var(--band);color:#fff;padding:12px 16px}
+.helphead h2{margin:0;font-size:20px}.helphead .btn{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.helpbody{padding:14px 20px;overflow:auto;font-size:14px;line-height:1.55}
+.helpbody p{margin:0 0 10px}.helpbody ol{margin:0 0 10px;padding-left:20px}.helpbody li{margin-bottom:8px}
+.helpfoot{padding:10px 16px 14px;text-align:right;border-top:1px solid var(--line)}
 #srcdlg{max-width:560px}
 .srcbox{padding:18px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
 .srcbox h3{margin:0}.srcbox p{margin:0}
@@ -245,6 +253,7 @@ dialog.wide{max-width:min(1500px,97vw)}
   <button class="navbtn" id="exp" data-t="export"></button>
   <label class="navbtn" style="cursor:pointer"><span data-t="import"></span><input type="file" id="imp" accept=".json" hidden></label>
   <div class="lang"><button data-lang="en">EN</button><button data-lang="es">ES</button></div>
+  <button class="navbtn" id="helpbtn" aria-label="Help" title="Help">?</button>
   <button class="navbtn" id="theme" aria-label="Theme">◐</button>
 </div>
 
@@ -318,6 +327,7 @@ dialog.wide{max-width:min(1500px,97vw)}
 <dialog id="dlg"></dialog>
 <dialog id="pdlg" class="wide"></dialog>
 <dialog id="srcdlg"></dialog>
+<dialog id="helpdlg"></dialog>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -871,6 +881,28 @@ $('#csvp').onclick=()=>{const en=LANG==='en';const rows=[en?['panel','kind','thr
   [...D.paneles,...store.paneles.map(p=>({...p,tipo:en?'mine':'propio',hilo:p.nombre}))].forEach(p=>{const st=store.estados[p.id]||{};rows.push([p.id,vl('tipo',p.tipo),vl('hilo',p.hilo),vl('estado',st.estado||'por probar'),st.fav?'✓':'',st.nota||'',...p.anclas,...p.anclas.map(i=>item(i).archivo),haikuOf(p).replace(/\n/g,' / ')]);});
   download('interpaisajes_panels.csv',rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');};
 
+const HELP={en:{title:'How to use this catalog',body:`<p>This catalog helps you explore the image corpus and build the panels for <i>Inter-paisajes | Inter-landscapes</i>. Each panel has four real photographs, called anchors, with seven AI transition images between each pair. The fourth anchor returns to the first, so the panel closes as a ring.</p>
+<ol>
+<li><b>Corpus.</b> Browse every image. Use the filters on the left (region, scale, design elements and principles, color) and the search box. Click an image to open its record, where you can correct its labels, add a note and set its status. Use “+ panel” to send an image to your panel in progress.</li>
+<li><b>Suggested panels.</b> 88 ready combinations, each with a haiku. Click a panel name to see its four anchors side by side, as they would look on the wall. Use ← and → to change panels, “Order by” to sort them, and ☆ to mark favorites. “Edit” loads a panel into the builder.</li>
+<li><b>My panels.</b> Build your own. Add four anchors from the Corpus or press “Random combination”. Lock a slot with 🔒 to keep an image and randomize the rest. Use the arrows to set the circular order, then name the panel and press “Save panel”. Saved panels can be sorted, opened and edited like the suggested ones.</li>
+<li><b>Download.</b> Every panel has a Download button. You receive its four images with the prefixes 01_, 02_, 03_ and 04_ that give the order, plus a text file with the haiku.</li>
+<li><b>Glossary.</b> Definitions of the design principles and elements used in the labels, organized after Pentak and Lauer, <i>Design Basics</i>.</li>
+<li><b>Saving and sharing.</b> Your choices stay in this browser only. Use “Export changes” to save them in a file, and “Import” to load a file from someone else, for example to share panels between Andrés and Sandra.</li>
+</ol>
+<p class="help">EN and ES change the language. The ◐ button switches between light and dark. You can reopen these instructions at any time with the ? button.</p>`,ok:'Got it'},es:{title:'Cómo usar este catálogo',body:`<p>Este catálogo permite explorar el corpus de imágenes y armar los paneles de <i>Inter-paisajes | Inter-landscapes</i>. Cada panel tiene cuatro fotografías reales, llamadas anclas, con siete imágenes de transición generadas con IA entre cada par. La cuarta ancla vuelve a la primera, de modo que el panel se cierra como un anillo.</p>
+<ol>
+<li><b>Corpus.</b> Recorre todas las imágenes. Usa los filtros de la izquierda (región, escala, elementos y principios de diseño, color) y el buscador. Un clic en una imagen abre su ficha, donde puedes corregir sus etiquetas, añadir una nota y cambiar su estado. Con “+ panel” envías una imagen al panel en construcción.</li>
+<li><b>Paneles sugeridos.</b> 88 combinaciones listas, cada una con un haiku. Un clic en el nombre de un panel muestra sus cuatro anclas una al lado de otra, como se verían en el muro. Usa ← y → para cambiar de panel, “Ordenar por” para ordenarlos y ☆ para marcar favoritos. “Editar” carga un panel en el armador.</li>
+<li><b>Mis paneles.</b> Arma los tuyos. Añade cuatro anclas desde el Corpus o pulsa “Combinación aleatoria”. Bloquea una casilla con 🔒 para conservar una imagen y sortear el resto. Con las flechas defines el orden circular; luego pon un nombre y pulsa “Guardar panel”. Los paneles guardados se ordenan, se abren y se editan igual que los sugeridos.</li>
+<li><b>Descargar.</b> Todos los paneles tienen un botón Descargar. Recibes sus cuatro imágenes con los prefijos 01_, 02_, 03_ y 04_ que indican el orden, más un archivo de texto con el haiku.</li>
+<li><b>Glosario.</b> Definiciones de los principios y elementos de diseño usados en las etiquetas, organizadas a partir de Pentak y Lauer, <i>Design Basics</i>.</li>
+<li><b>Guardar y compartir.</b> Tus cambios quedan solo en este navegador. Usa “Exportar cambios” para guardarlos en un archivo e “Importar” para cargar el archivo de otra persona, por ejemplo para compartir paneles entre Andrés y Sandra.</li>
+</ol>
+<p class="help">EN y ES cambian el idioma. El botón ◐ alterna entre modo claro y oscuro. Puedes volver a abrir estas instrucciones en cualquier momento con el botón ?.</p>`,ok:'Entendido'}};
+function openHelp(){const h=HELP[LANG]||HELP.en,d=$('#helpdlg');d.innerHTML=`<div class="helpbox"><div class="helphead"><h2>${h.title}</h2><button class="btn small" data-h="x" aria-label="Close">✕</button></div><div class="helpbody">${h.body}</div><div class="helpfoot"><button class="btn" data-h="x">${h.ok}</button></div></div>`;d.onclick=e=>{if(e.target===d||e.target.closest('[data-h]'))d.close();};d.onclose=()=>{try{localStorage.setItem(KEY+'_help','1');}catch(e){}};if(!d.open)d.showModal();d.querySelector('.helpbody').scrollTop=0;}
+$('#helpbtn').onclick=openHelp;
+try{if(!localStorage.getItem(KEY+'_help'))setTimeout(openHelp,400);}catch(e){setTimeout(openHelp,400);}
 applyLang();
 try{const tb=localStorage.getItem(KEY+'_tab');if(tb&&document.getElementById(tb))showTab(tb);}catch(e){}
 })();
