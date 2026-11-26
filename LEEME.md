@@ -63,6 +63,10 @@ Sube solo estos archivos al repositorio: `index.html`, `data.js`, `glossary.js`,
 
 Cada imagen del Corpus tiene una estrella ☆ para marcarla como favorita. Las favoritas se guardan en el navegador (el navegador recibe la solicitud de almacenamiento persistente), se filtran con el botón «Favoritas» del panel lateral, se cuentan en la barra de cifras y se incluyen en **Exportar cambios** (y se fusionan con **Importar**). Para una copia fuera del navegador, el botón «Descargar favoritas (CSV)» genera una lista con id, región, encuadre y archivo.
 
+## Barra del panel en construcción
+
+Al añadir imágenes con «+ panel», aparece una barra en la parte inferior con las anclas elegidas (de 1 a 4), una × para quitar cada una, un botón para abrir Mis paneles y otro para vaciar. Se oculta cuando el panel está vacío y en la pestaña Mis paneles, que ya muestra el armador.
+
 ## Créditos de los iconos
 
-Los iconos de las secciones del panel lateral son de [Phosphor Icons](https://phosphoricons.com), peso light, con licencia MIT.
+Los iconos de las secciones del panel lateral y de los términos del glosario son de [Phosphor Icons](https://phosphoricons.com), peso light, con licencia MIT; ocho diagramas del glosario (proximidad, repetición, equilibrio asimétrico, textura y los cuatro esquemas de color) son dibujos propios del proyecto.
